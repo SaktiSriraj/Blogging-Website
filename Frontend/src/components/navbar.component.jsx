@@ -39,12 +39,12 @@ const Navbar = () => {
 
 
                     <Link className='btn-dark py-2.5' to="/sign-in">
-                        Sign-in
+                        Sign in
                     </Link>
 
 
                     <Link className='btn-light py-2.5 hidden md:block' to="/sign-up">
-                        Sign-up
+                        Sign up
                     </Link>
 
                 </div>
