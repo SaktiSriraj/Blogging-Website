@@ -82,11 +82,11 @@ const userSchema = mongoose.Schema({
         default: [],
     }
 
-}, 
-{ 
+},
+{
     timestamps: {
         createdAt: 'joinedAt'
-    } 
+    }
 
 })
 
