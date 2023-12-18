@@ -46,7 +46,7 @@ const generateUsername = async (email) => {
 
 }
 
-//making routes for signup route
+//making routes for sign-up route
 server.post("/sign-up", (req, res) => {
     
     let {fullname, email, password} = req.body;
@@ -93,7 +93,7 @@ server.post("/sign-up", (req, res) => {
 
 })
 
-
+//making routes for sign-in route
 server.post("/sign-in", (req,res) => {
 
     let { email, password } = req.body;
@@ -117,7 +117,6 @@ server.post("/sign-in", (req,res) => {
             }
         })
 
-        //return res.json({"status":"Got user document"})
     })
     .catch(err => {
         console.log(err.message);
