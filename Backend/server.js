@@ -14,6 +14,7 @@ let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for e
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
 server.use(express.json());
+server.use(cors()); //this lets the server to accept request from any port number along with th default
 
 mongoose.connect(process.env.DB_LOCATION, {
     autoIndex: true
@@ -21,7 +22,13 @@ mongoose.connect(process.env.DB_LOCATION, {
 
 //data formatting
 const formatDataToSend = (user) => {
+
+    const accessToken = jwt.sign({ id: user._id }, process.env.SECRET_ACCESS_KEY)
+
+    //Access token is stored in the user's browser session to validate the user login everytime the user accesses the website so that we don't have to ask the user to login everytime to make request.
+
     return {
+        accessToken,
         profile_img: user.personal_info.profile_img,
         username: user.personal_info.username,
         fullname: user.personal_info.fullname
