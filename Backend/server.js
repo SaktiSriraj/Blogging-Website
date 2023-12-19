@@ -48,6 +48,7 @@ const generateUsername = async (email) => {
 
 }
 
+//sign-up
 server.post("/sign-up", (req, res) => {
 
     let { fullname, email, password } = req.body
@@ -92,6 +93,39 @@ server.post("/sign-up", (req, res) => {
 
     
 })
+
+//sign-in
+server.post("/sign-in", (req, res) => {
+
+    let { email, password } = req.body;
+
+    User.findOne({ "personal_info.email": email })
+    .then((user) => {
+        if(!user){
+            return res.status(403).json({ "error": "Email not found"})
+        }
+        
+        bcrypt.compare( password, user.personal_info.password, (err,result) => {
+            if(err){
+                return res.status(403).json({ "error": "Error occured while login. Please try again."})
+            }
+
+            if(!result){
+                return res.status(403).json({ "error": "Incorrect Password"})
+            }else{
+                return res.status(200).json(formatDataToSend(user));
+            }
+        })
+
+    })
+    .catch(err => {
+        console.log(err);
+        return res.status(500).json({ "error": err.message})
+    })
+
+})
+
+
 server.listen(PORT, ()=>{
     console.log('listening on port -> ' + PORT)
 });
