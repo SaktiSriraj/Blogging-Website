@@ -5,7 +5,7 @@ import express from "express";
 import jwt from 'jsonwebtoken'; //to create access token
 import mongoose from "mongoose";
 import { nanoid } from 'nanoid'; //gives random unique string
-import User from './Schema/User.js';
+import User from './Schema/User.js'; //Schema
 
 const server = express();
 let PORT = 3000;
@@ -36,10 +36,27 @@ server.post("/sign-up", (req, res) => {
     }
 
     if(!passwordRegex.test(password)){
-        return res.status(403).json({"error":"Password must be at 6 - 20 characters long, with atleast one lowercase character, one uppercase character and a number"});
+        return res.status(403).json({"error":"Password must be at 6 - 20 characters long, with atleast one lowercase character, one uppercase character and a numeric character"});
     }
 
-    return res.status(200).json({"Status" : "OK"})
+    //password encryption
+    bcrypt.hash(password, 10, (err, hashedPassword) => {
+        let username = email.split("@")[0];
+
+        let user = new User({
+            personal_info: { fullname, email, password: hashedPassword, username }
+        })
+
+        user.save().then((u) => {
+            return res.status(200).json({ user : u })
+        })
+        .catch(err =>{
+            return res.status(500).json({ "error": err.message })
+        })
+
+        console.log(hashedPassword)
+    })
+
     
 })
 server.listen(PORT, ()=>{
