@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { Link, Outlet } from "react-router-dom"; // Outlet: Render nested-route elements
 import logo from "../imgs/logo.png";
-import {Link,Outlet} from "react-router-dom"; // Outlet: Render nested-route elements
 
 const Navbar = () => {
 
@@ -33,7 +33,7 @@ const Navbar = () => {
 
 
                     <Link to="/editor" className='hidden md:flex gap-2 link rounded-md'>
-                        <i class="fi fi-rr-edit"></i>
+                        <i className="fi fi-rr-edit"></i>
                         <p>Write</p>
                     </Link>
 
