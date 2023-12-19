@@ -19,6 +19,28 @@ mongoose.connect(process.env.DB_LOCATION, {
     autoIndex: true
 })
 
+//data formatting
+const formatDataToSend = (user) => {
+    return {
+        profile_img: user.personal_info.profile_img,
+        username: user.personal_info.username,
+        fullname: user.personal_info.fullname
+    }
+}
+
+//username generation
+const generateUsername = async (email) => {
+    
+    let username = email.split("@")[0];
+
+    let usernameExists = await User.exists({ "personal_info.username" : username }).then((result) => result);
+
+    usernameExists ? username += nanoid().substring(0,5) : "";
+
+    return username;
+
+}
+
 server.post("/sign-up", (req, res) => {
 
     let { fullname, email, password } = req.body
@@ -40,21 +62,25 @@ server.post("/sign-up", (req, res) => {
     }
 
     //password encryption
-    bcrypt.hash(password, 10, (err, hashedPassword) => {
-        let username = email.split("@")[0];
+    bcrypt.hash(password, 10, async (err, hashedPassword) => {
+        let username = await generateUsername(email);
 
         let user = new User({
             personal_info: { fullname, email, password: hashedPassword, username }
         })
 
         user.save().then((u) => {
-            return res.status(200).json({ user : u })
+            return res.status(200).json(formatDataToSend(u))
         })
         .catch(err =>{
+
+            if(err.code === 11000){
+                return res.status(500).json({ "error" : "Email already exists" });
+            }
+
             return res.status(500).json({ "error": err.message })
         })
 
-        console.log(hashedPassword)
     })
 
     
