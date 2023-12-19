@@ -53,6 +53,7 @@ server.post("/sign-up", (req, res) => {
 
     let { fullname, email, password } = req.body
 
+    //Validating data from Frontend
     if(fullname.length < 3){
         return res.status(403).json({"error" : "Fullname must be ateast 3 letters long"})
     }
@@ -63,6 +64,10 @@ server.post("/sign-up", (req, res) => {
 
     if(!emailRegex.test(email)){
         return res.status(403).json({"error" : "Enter a valid email address"});
+    }
+
+    if(!password.length){
+        return res.status(403).json({"error" : "Enter a valid password"});
     }
 
     if(!passwordRegex.test(password)){
