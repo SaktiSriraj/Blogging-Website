@@ -5,20 +5,36 @@ import { Link } from "react-router-dom";
 import AnimationWrapper from "../common/page-animation";
 import InputBox from "../components/input.component";
 import googleIcon from "../imgs/google.png";
+import { storeInSession } from "../common/session";
 
     
 const UserAuthForm = ({type}) => {
 
-    const authForm = useRef();
+
+    //Send the data to backend server
+    const userAuthThroughServer = (serverRoute, formData) => {
+        
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData)
+        .then(({ data }) => {
+            storeInSession("user", JSON.stringify(data))
+            console.log(sessionStorage)
+        })
+        .catch(({ response }) => {
+            toast.error(response.data.error)
+        })
+
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        let serverRoute = type == "sign-in" ? "/sign-in" : "/sign-up";
 
         let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
         let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
         //Form Data
-        let form = new FormData(authForm.current);
+        let form = new FormData(formElement);
         let formData = {}
 
         for(let [key, value] of form.entries()) {
@@ -51,6 +67,8 @@ const UserAuthForm = ({type}) => {
             return toast.error("Password must be at 6 - 20 characters long, with atleast one lowercase character, one uppercase character and a numeric character");
         }
 
+        userAuthThroughServer(serverRoute, formData);
+
     }
 
     return (
@@ -58,7 +76,7 @@ const UserAuthForm = ({type}) => {
 
             <section className="h-cover flex items-center justify-center">
                 <Toaster />
-                <form ref={authForm} className="w-[80%] max-w-[400px]">
+                <form id="formElement" className="w-[80%] max-w-[400px]">
 
                     <h1 className="text-4xl font-gelasio capitalize text-center mb-24">
                         {type == "sign-in" ? "Welcome Back" : "Join Us Today"}
