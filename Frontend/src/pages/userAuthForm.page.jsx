@@ -7,6 +7,7 @@ import AnimationWrapper from "../common/page-animation";
 import { storeInSession } from "../common/session";
 import InputBox from "../components/input.component";
 import googleIcon from "../imgs/google.png";
+import { authWithGoogle } from "../common/firebase";
 
     
 const UserAuthForm = ({type}) => {
@@ -73,6 +74,20 @@ const UserAuthForm = ({type}) => {
 
     }
 
+    const handleGoogleAuth = (e) => {
+
+        e.preventDefault();
+
+        authWithGoogle().then(user => {
+            console.log(user);
+        })
+        .catch(err => {
+            toast.error("There was a problem logging in")
+            return console.log(err);
+        })
+
+    }
+
     return (
         accessToken ?
             <Navigate to="/" />
@@ -127,10 +142,11 @@ const UserAuthForm = ({type}) => {
                             <p>or</p>
                             <hr className="w-1/2 border-black"/>
                         </div>
-
-                        <button className="btn-dark flex items-center justify-center gap-4 w-[90%] center ">
+                        
+                        {/* Logging in with Google */}
+                        <button className="btn-dark flex items-center justify-center gap-4 w-[90%] center " onClick={handleGoogleAuth}>
                             <img src={googleIcon} className="w-5" />
-                            continue with google
+                            Continue with google
                         </button>
 
                         {
