@@ -1,15 +1,17 @@
 import axios from "axios"; //server access
-import { useRef } from "react"; //used to access an HTML element
+import { useContext } from "react"; //used to access an HTML element
 import { Toaster, toast } from "react-hot-toast"; //to create alert-ui
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { UserContext } from "../App";
 import AnimationWrapper from "../common/page-animation";
+import { storeInSession } from "../common/session";
 import InputBox from "../components/input.component";
 import googleIcon from "../imgs/google.png";
-import { storeInSession } from "../common/session";
 
     
 const UserAuthForm = ({type}) => {
 
+    let { userAuth: { accessToken }, setUserAuth } = useContext(UserContext)
 
     //Send the data to backend server
     const userAuthThroughServer = (serverRoute, formData) => {
@@ -17,7 +19,7 @@ const UserAuthForm = ({type}) => {
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData)
         .then(({ data }) => {
             storeInSession("user", JSON.stringify(data))
-            console.log(sessionStorage)
+            setUserAuth(data)
         })
         .catch(({ response }) => {
             toast.error(response.data.error)
@@ -72,86 +74,90 @@ const UserAuthForm = ({type}) => {
     }
 
     return (
-        <AnimationWrapper keyValue={type}>
+        accessToken ?
+            <Navigate to="/" />
+            //If we have a access token, then a user is already in session and we won't be redirected to sign-in page, rather we will be redirected to the home page
+        :
+            <AnimationWrapper keyValue={type}>
 
-            <section className="h-cover flex items-center justify-center">
-                <Toaster />
-                <form id="formElement" className="w-[80%] max-w-[400px]">
+                <section className="h-cover flex items-center justify-center">
+                    <Toaster />
+                    <form id="formElement" className="w-[80%] max-w-[400px]">
 
-                    <h1 className="text-4xl font-gelasio capitalize text-center mb-24">
-                        {type == "sign-in" ? "Welcome Back" : "Join Us Today"}
-                    </h1>
+                        <h1 className="text-4xl font-gelasio capitalize text-center mb-24">
+                            {type == "sign-in" ? "Welcome Back" : "Join Us Today"}
+                        </h1>
 
-                    {
-                        type != "sign-in" ?
-                            <InputBox
-                                name="fullname"
-                                type="text"
-                                placeholder="Full Name"
-                                icon="fi-rr-user"
-                            />
-                        :
-                            ""
-                    }
+                        {
+                            type != "sign-in" ?
+                                <InputBox
+                                    name="fullname"
+                                    type="text"
+                                    placeholder="Full Name"
+                                    icon="fi-rr-user"
+                                />
+                            :
+                                ""
+                        }
 
-                    <InputBox
-                        name="email"
-                        type="email"
-                        placeholder="Email"
-                        icon="fi-rr-envelope"
-                    />
+                        <InputBox
+                            name="email"
+                            type="email"
+                            placeholder="Email"
+                            icon="fi-rr-envelope"
+                        />
 
-                    <InputBox
-                        name="password"
-                        type="password"
-                        placeholder="Password"
-                        icon="fi-rr-key"
-                    />
+                        <InputBox
+                            name="password"
+                            type="password"
+                            placeholder="Password"
+                            icon="fi-rr-key"
+                        />
 
-                    <button
-                        className=" btn-dark mt-14 w-[25%] flex items-center justify-center center "
-                        type="submit" onClick={handleSubmit}>
+                        <button
+                            className=" btn-dark mt-14 w-[25%] flex items-center justify-center center "
+                            type="submit" onClick={handleSubmit}>
 
-                        {type.replace("-", " ")}
-                    </button>
+                            {type.replace("-", " ")}
+                        </button>
 
-                    
-                    <div className="relative w-full flex items-center gap-2 my-10 opacity-10 uppercase text-black font-bold">
-                        <hr className="w-1/2 border-black"/>
-                        <p>or</p>
-                        <hr className="w-1/2 border-black"/>
-                    </div>
+                        
+                        <div className="relative w-full flex items-center gap-2 my-10 opacity-10 uppercase text-black font-bold">
+                            <hr className="w-1/2 border-black"/>
+                            <p>or</p>
+                            <hr className="w-1/2 border-black"/>
+                        </div>
 
-                    <button className="btn-dark flex items-center justify-center gap-4 w-[90%] center ">
-                        <img src={googleIcon} className="w-5" />
-                        continue with google
-                    </button>
+                        <button className="btn-dark flex items-center justify-center gap-4 w-[90%] center ">
+                            <img src={googleIcon} className="w-5" />
+                            continue with google
+                        </button>
 
-                    {
-                        type=="sign-in" ?
-                            <p className="mt-6 text-dark-grey text-xl text-center">
-                                Don't have an account?
-                                <Link to="/sign-up" className="underline text-black text-xl ml-1">
-                                    Join Here
-                                </Link>
-                            </p>
-                        :
-                            <p className="mt-6 text-dark-grey text-xl text-center">
-                                Already a member?
-                                <Link to="/sign-in" className="underline text-black text-xl ml-1">
-                                    Sign in Here
-                                </Link>
-                            </p>
+                        {
+                            type=="sign-in" ?
+                                <p className="mt-6 text-dark-grey text-xl text-center">
+                                    Don't have an account?
+                                    <Link to="/sign-up" className="underline text-black text-xl ml-1">
+                                        Join Here
+                                    </Link>
+                                </p>
+                            :
+                                <p className="mt-6 text-dark-grey text-xl text-center">
+                                    Already a member?
+                                    <Link to="/sign-in" className="underline text-black text-xl ml-1">
+                                        Sign in Here
+                                    </Link>
+                                </p>
 
-                    }
-                    
+                        }
+                        
 
 
-                </form>
+                    </form>
 
-            </section>
+                </section>
 
-        </AnimationWrapper>
+            </AnimationWrapper>
     );
 }
 
