@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Link, Outlet } from "react-router-dom"; // Outlet: Render nested-route elements
 import logo from "../imgs/logo.png";
+import { UserContext } from '../App';
+import UserNavigationPanel from './user-navigation.component';
 
 const Navbar = () => {
 
     const [searchBoxVisibility,setSearchBoxVisibility] = useState (false);
 
+    const { userAuth, userAuth: { accessToken, profile_img } } = useContext (UserContext);
 
     return (
         <>
@@ -37,15 +40,41 @@ const Navbar = () => {
                         <p>Write</p>
                     </Link>
 
+                    {
+                        accessToken ?
+                            <>
+                            
+                                <Link to="/dashboard/notification">
+                                    <button className="w-12 h-12 rounded-full bg-grey relative hover:bg-black/10">
+                                        <i className="fi fi-rr-bell text-2xl block mt-2 text-dark-grey"></i>
+                                    </button>
+                                </Link>
 
-                    <Link className='btn-dark py-2.5' to="/sign-in">
-                        Sign in
-                    </Link>
+                                <div className='relative'>
+                                    <button className='w-12 h-12 mt-1'>
+                                        <img src={profile_img} className='w-full h-full object-cover rounded-full' />
+                                    </button>
+                                    
+                                    <UserNavigationPanel />
+                                </div>
+
+                            
+                            </>
+                        :
+                            <>
+                                <Link className='btn-dark py-2.5' to="/sign-in">
+                                    Sign in
+                                </Link>
 
 
-                    <Link className='btn-light py-2.5 hidden md:block' to="/sign-up">
-                        Sign up
-                    </Link>
+                                <Link className='btn-light py-2.5 hidden md:block' to="/sign-up">
+                                    Sign up
+                                </Link>
+                            </>
+
+                    }
+
+                    
 
                 </div>
 
