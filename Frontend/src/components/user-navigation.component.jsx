@@ -1,12 +1,12 @@
-import AnimationWrapper from "../common/page-animation";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from '../App';
-import { useContext } from "react";
+import AnimationWrapper from "../common/page-animation";
 import { removeFromSession } from "../common/session";
 
 const UserNavigationPanel = () => {
 
-    const { userAuth: {username}, setUserAuth } = useContext(UserContext);
+    const { userAuth, userAuth: {username}, setUserAuth } = useContext(UserContext);
 
     const signOutUser = () => {
         removeFromSession("user");

@@ -14,7 +14,7 @@ const App = () => {
 
         let userInSession = lookInSession("user");
 
-        userInSession ? setUserAuth(JSON.parse(userInSession)) : setUserAuth({accessToken: null})
+        userInSession ? setUserAuth(JSON.parse(userInSession)) : setUserAuth({access_token: null})
 
     }, [])
     
@@ -22,7 +22,8 @@ const App = () => {
         <UserContext.Provider value={{userAuth, setUserAuth}}>
             
             <Routes>
-                <Route path="/" element={ <Navbar /> }> //Parent: Home + Navbar
+            {/* Parent: Home + Navbar */}
+                <Route path="/" element={ <Navbar /> }> 
 
                     {/*  / + sign-up => /sign-up */}
                     <Route path="sign-in" element={ <UserAuthForm type="sign-in" /> } />

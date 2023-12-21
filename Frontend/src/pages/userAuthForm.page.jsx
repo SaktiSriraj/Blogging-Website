@@ -9,7 +9,6 @@ import InputBox from "../components/input.component";
 import googleIcon from "../imgs/google.png";
 import { authWithGoogle } from "../common/firebase";
 
-    
 const UserAuthForm = ({type}) => {
 
     let { userAuth: { accessToken }, setUserAuth } = useContext(UserContext)
@@ -24,7 +23,9 @@ const UserAuthForm = ({type}) => {
         })
         .catch(({ response }) => {
             toast.error(response.data.error)
+            //console.log(response)
         })
+
 
     }
 
@@ -79,7 +80,17 @@ const UserAuthForm = ({type}) => {
         e.preventDefault();
 
         authWithGoogle().then(user => {
-            console.log(user);
+
+            console.log(user)
+            
+            let serverRoute = "/google-auth";
+            let formData = {
+                accessToken: user.accessToken
+            }
+
+            userAuthThroughServer(serverRoute, formData);
+            
+
         })
         .catch(err => {
             toast.error("There was a problem logging in")
