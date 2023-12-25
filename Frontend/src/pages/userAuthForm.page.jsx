@@ -75,11 +75,11 @@ const UserAuthForm = ({type}) => {
 
     }
 
-    const handleGoogleAuth = (e) => {
+    const handleGoogleAuth = async (e) => {
 
         e.preventDefault();
 
-        authWithGoogle().then(user => {
+        await authWithGoogle().then(user => {
 
             console.log(user)
             

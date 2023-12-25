@@ -14,7 +14,7 @@ const App = () => {
 
         let userInSession = lookInSession("user");
 
-        userInSession ? setUserAuth(JSON.parse(userInSession)) : setUserAuth({access_token: null})
+        userInSession ? setUserAuth(JSON.parse(userInSession)) : setUserAuth({accessToken: null})
 
     }, [])
     
