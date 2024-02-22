@@ -11,7 +11,6 @@ import User from './Schema/User.js'; //Schema
 import serviceAccountKey from "./fullstack-blogging-site.json" assert { type: "json" };
 import aws from "aws-sdk";
 
-
 const server = express();
 let PORT = 3000;
 
@@ -35,6 +34,20 @@ const s3 = new aws.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY 
 });
+
+const generateUploadURL = async () => {
+
+    const date = new Date();
+    const imageName = `${nanoid()}-${date.getTime()}.jpeg`;
+
+    return await s3.getSignedUrlPromise('putObject',{
+        Bucket : 'blogging-website-sdev',
+        Key : imageName,
+        Expires : 1000,
+        ContentType: 'image/jpeg'
+    });
+
+}
 
 //data formatting
 const formatDataToSend = (user) => {
@@ -63,6 +76,15 @@ const generateUsername = async (email) => {
     return username;
 
 }
+
+//upload image url root
+server.get('/get-upload-url', (req, res) => {
+    generateUploadURL().then(url => res.status(200).json({uploadUrl : url}))
+    .catch(err => {
+        console.log(err.message);
+        return res.status(500).json({error : err.message});
+    })
+})
 
 //sign-up
 server.post("/sign-up", (req, res) => {
