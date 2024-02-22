@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import { nanoid } from 'nanoid'; //gives random unique string
 import User from './Schema/User.js'; //Schema
 import serviceAccountKey from "./fullstack-blogging-site.json" assert { type: "json" };
+import aws from "aws-sdk";
 
 
 const server = express();
@@ -27,6 +28,13 @@ server.use(cors()); //this lets the server to accept request from any port numbe
 mongoose.connect(process.env.DB_LOCATION, {
     autoIndex: true
 })
+
+//setting up s3 bucket
+const s3 = new aws.S3({
+    region: process.env.BUCKET_REGION,
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY 
+});
 
 //data formatting
 const formatDataToSend = (user) => {
