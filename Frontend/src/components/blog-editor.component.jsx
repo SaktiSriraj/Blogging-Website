@@ -12,16 +12,16 @@ import { tools } from "./tools.component";
 
 const BlogEditor = () => {
 
-    let { blog, blog: { title, banner, content, tags, des }, setBlog } = useContext(EditorContext);
+    let { blog, blog: { title, banner, content, tags, des }, setBlog, textEditor, setTextEditor } = useContext(EditorContext);
 
     //useEffect hook
     useEffect(() => {
-        let editor = new EditorJS({
+        setTextEditor(new EditorJS({
             holderId: "textEditor", //id of the portion that we want to act as our text editor
             data: '',
             tools: tools, //adding text-editing tools to the editor
             placeholder: 'Write your story', //initially we got this 2 times because react renders everything twice
-        })
+        }))
     }, [])
 
     const handleBannerUpload = (e) => {
