@@ -5,9 +5,11 @@ import './index.css'
 import { BrowserRouter } from 'react-router-dom'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </React.StrictMode>,
+  // </React.StrictMode>
+  //commenting out <React.StrictMode> to avoid rendering everything twice
+  //TODO:  uncomment <React.StrictMode> while deployment to avoid unwanted warnings
 )

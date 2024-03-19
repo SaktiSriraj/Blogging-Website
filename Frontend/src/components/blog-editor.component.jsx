@@ -5,11 +5,24 @@ import defaultBanner from "../imgs/blog banner.png"
 import { uploadImage } from "../common/aws";
 import { useContext } from "react";
 import { Toaster, toast } from "react-hot-toast";
-import { EditorContext } from "../pages/editor.pages";
+import Editor, { EditorContext } from "../pages/editor.pages";
+import { useEffect } from "react";
+import EditorJS from "@editorjs/editorjs";
+import { tools } from "./tools.component";
 
 const BlogEditor = () => {
 
     let { blog, blog: { title, banner, content, tags, des }, setBlog } = useContext(EditorContext);
+
+    //useEffect hook
+    useEffect(() => {
+        let editor = new EditorJS({
+            holderId: "textEditor", //id of the portion that we want to act as our text editor
+            data: '',
+            tools: tools, //adding text-editing tools to the editor
+            placeholder: 'Write your story', //initially we got this 2 times because react renders everything twice
+        })
+    }, [])
 
     const handleBannerUpload = (e) => {
         let img = e.target.files[0];
@@ -98,6 +111,10 @@ const BlogEditor = () => {
 
                         </textarea>
                         <hr className="w-full opacity-20 my-5"/>
+
+                        {/* Content of the blog */}
+                        {/* We are using EditorJS class to write the content */}
+                        <div id="textEditor" className="font-gelasio"></div>
 
                     </div>
                 </section>
