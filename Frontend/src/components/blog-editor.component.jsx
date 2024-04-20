@@ -18,9 +18,9 @@ const BlogEditor = () => {
     useEffect(() => {
         setTextEditor(new EditorJS({
             holderId: "textEditor", //id of the portion that we want to act as our text editor
-            data: '',
+            data: content,
             tools: tools, //adding text-editing tools to the editor
-            placeholder: 'Write your story', //initially we got this 2 times because react renders everything twice
+            placeholder: 'Compose Your Masterpiece', //initially we got this 2 times because react renders everything twice
         }))
     }, [])
 
@@ -53,6 +53,7 @@ const BlogEditor = () => {
         img.src = defaultBanner;
     }
 
+    // Prevents Enter Key Action
     const handleTitleKeyDown = (e) => {
         if (e.keyCode === 13) {
             e.preventDefault();
@@ -92,7 +93,6 @@ const BlogEditor = () => {
                 return toast.error(err);
             })
         }
-
     }
 
     return (
@@ -137,7 +137,7 @@ const BlogEditor = () => {
                             </label>
                         </div>
 
-                        <textarea placeholder="Blog Title" className="text-4xl font-md w-full h-20 outline-none resize-none mt-10 leading-tight placeholder:opacity-40" onKeyDown={handleTitleKeyDown} onChange={handleTitleChange}>
+                        <textarea defaultValue={ title } placeholder="Blog Title" className="text-4xl font-md w-full h-20 outline-none resize-none mt-10 leading-tight placeholder:opacity-40" onKeyDown={handleTitleKeyDown} onChange={handleTitleChange}>
 
                         </textarea>
                         <hr className="w-full opacity-20 my-5" />
