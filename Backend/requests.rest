@@ -1,1 +1,24 @@
-GET http://localhost:3000/get-upload-url
+# Access Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MjNhOGU0MzdjMDA5MzI2YmMwMzljMyIsImlhdCI6MTcxMzYxMzAyOH0.FW9TIXX_pJy3Ep_NsvENM32lptJSZ3IR-jH7LfHnINw
+
+# POST http://localhost:3000/sign-up
+# Content-Type: application/json
+
+# {
+#     "fullname": "john",
+#     "email": "john@example.com",
+#     "password": "John@123"
+# }
+
+POST http://localhost:3000/create-blog
+Content-Type: application/json
+Authorization:  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MjNhOGU0MzdjMDA5MzI2YmMwMzljMyIsImlhdCI6MTcxMzYxMzAyOH0.FW9TIXX_pJy3Ep_NsvENM32lptJSZ3IR-jH7LfHnINw
+
+{
+    "title" : "Hello @ 123",
+    "banner" : "https://example.com/image-url",
+    "des" : "This is Decription",
+    "content" : {
+        "blocks" : [ 1, 2 ] 
+    },
+    "tags" : ["tag1", "tag2"]
+}

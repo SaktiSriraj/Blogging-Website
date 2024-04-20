@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken'; //to create access token
 import mongoose from "mongoose";
 import { nanoid } from 'nanoid'; //gives random unique string
 import User from './Schema/User.js'; //Schema
+import Blog from './Schema/Blog.js'; 
 import serviceAccountKey from "./fullstack-blogging-site.json" assert { type: "json" };
 import aws from "aws-sdk";
 
@@ -46,6 +47,27 @@ const generateUploadURL = async () => {
         Expires : 1000,
         ContentType: 'image/jpeg'
     });
+
+}
+
+//JWT Verification
+const verifyJWT = (req, res, next) => {
+
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(" ")[1]
+
+    if(token == null){
+        return res.status(401).json({ error: "No acces token" })
+    }
+
+    jwt.verify(token, process.env.SECRET_ACCESS_KEY, (err, user) => {
+        if(err){
+            return res.status(403).json({ error: "Access Token is invalid" })
+        }
+
+        req.user = user.id
+        next()
+    })
 
 }
 
@@ -223,6 +245,59 @@ server.post("/google-auth", async (req, res) => {
     })
     .catch(err => {
         return res.status(500).json({ "error": "Failed to authenticate, try with another account." })
+    })
+
+})
+
+// Sending blog data from frontend to backend
+server.post('/create-blog', verifyJWT, (req, res) => {
+
+    let authorId = req.user;
+
+    let { title, des, banner, tags, content, draft } = req.body;
+
+    if(!title.length){
+        return res.status(403).json({ error: "You must provide a Title to Publish the Blog" })
+    }
+
+    if(!des.length || des.length > 200){
+        return res.status(403).json({ error: "You must provide a Blog Description" })
+    }
+
+    if(!banner.length){
+        return res.status(403).json({ error: "You must provide Blog Banner to Publish the Blog" })
+    }
+
+    if(!content.blocks.length){
+        return res.status(403).json({ error: "There must be some Blog Content to Publish" })
+    }
+
+    if(!tags.length || tags.length > 10){
+        return res.status(403).json({ error: "Provide at Max 10 Tags to Publish"})
+    }
+
+    tags = tags.map( tag => tag.toLowerCase())
+
+    let blog_id = title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g,"-").trim() + nanoid();
+
+    let blog = new Blog({
+        title, des, banner, content, tags, author: authorId, blog_id, draft: Boolean(draft)
+    })
+
+    blog.save().then(blog => {
+
+        let incrementVal = draft ? 0 : 1;
+        User.findOneAndUpdate({ _id: authorId }, { $inc: { "account_info.total_posts" : incrementVal }, $push: { "blogs" : blog._id } })
+        .then(user => {
+            return res.status(200).json({ id: blog.blog_id })
+        })
+        .catch(err => {
+            return res.status(500).json({ error : "Failed to Update total posts number" })
+        })
+
+    })
+    .catch(err => {
+        return res.status(500).json({ error : err.message })
     })
 
 })
