@@ -255,25 +255,29 @@ server.post('/create-blog', verifyJWT, (req, res) => {
     let authorId = req.user;
 
     let { title, des, banner, tags, content, draft } = req.body;
-
+    
     if(!title.length){
-        return res.status(403).json({ error: "You must provide a Title to Publish the Blog" })
+        return res.status(403).json({ error: "You must provide a Title for the Blog" })
     }
 
-    if(!des.length || des.length > 200){
-        return res.status(403).json({ error: "You must provide a Blog Description" })
-    }
+    if(!draft){
+    
+        if(!des.length || des.length > 200){
+            return res.status(403).json({ error: "You must provide a Blog Description" })
+        }
+    
+        if(!banner.length){
+            return res.status(403).json({ error: "You must provide Blog Banner to Publish the Blog" })
+        }
+    
+        if(!content.blocks.length){
+            return res.status(403).json({ error: "There must be some Blog Content to Publish" })
+        }
+    
+        if(!tags.length || tags.length > 10){
+            return res.status(403).json({ error: "Provide at Max 10 Tags to Publish"})
+        }
 
-    if(!banner.length){
-        return res.status(403).json({ error: "You must provide Blog Banner to Publish the Blog" })
-    }
-
-    if(!content.blocks.length){
-        return res.status(403).json({ error: "There must be some Blog Content to Publish" })
-    }
-
-    if(!tags.length || tags.length > 10){
-        return res.status(403).json({ error: "Provide at Max 10 Tags to Publish"})
     }
 
     tags = tags.map( tag => tag.toLowerCase())
