@@ -1,3 +1,4 @@
+import aws from "aws-sdk";
 import bcrypt from "bcrypt"; //used for password encryption
 import cors from 'cors';
 import 'dotenv/config';
@@ -7,10 +8,9 @@ import { getAuth } from "firebase-admin/auth";
 import jwt from 'jsonwebtoken'; //to create access token
 import mongoose from "mongoose";
 import { nanoid } from 'nanoid'; //gives random unique string
+import Blog from './Schema/Blog.js';
 import User from './Schema/User.js'; //Schema
-import Blog from './Schema/Blog.js'; 
 import serviceAccountKey from "./fullstack-blogging-site.json" assert { type: "json" };
-import aws from "aws-sdk";
 
 const server = express();
 let PORT = 3000;
@@ -246,7 +246,7 @@ server.post("/google-auth", async (req, res) => {
 
 })
 
-// Selecting Latest Blogs
+// Latest Blogs
 server.get('/latest-blogs', (req, res) => {
     
     let maxLimit = 5;
@@ -256,6 +256,22 @@ server.get('/latest-blogs', (req, res) => {
     .sort({ "publishedAt" : -1 }) // means -> give me the recent one
     .select("blog_id title des banner activity tags publishedAt -_id") // in order to select the fields that I will actually need
     .limit(maxLimit)
+    .then(blogs => {
+        return res.status(200).json({ blogs })
+    })
+    .catch(err => {
+        return res.status(500).json({ error : err.message })
+    })
+
+})
+
+server.get('/trending-blogs', (req, res) => {
+
+    Blog.find({ draft: false})
+    .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
+    .sort({ "activity.total_reads" : -1, "activiy.total_likes" : -1, "publishedAt" : -1})
+    .select("blog_id title publishedAt -_id")
+    .limit(5)
     .then(blogs => {
         return res.status(200).json({ blogs })
     })
